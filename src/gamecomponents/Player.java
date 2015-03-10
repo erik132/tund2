@@ -5,16 +5,20 @@ import java.util.Iterator;
 import java.util.List;
 
 
+
 import common.ArrayListQueue;
 import common.Point;
+import engine.InputListener;
 import engine.VisualElement;
 import gamecomponents.skins.PlayerSkin;
 
-public class Player extends GameboardElement {
+public class Player extends GameboardElement implements InputListener {
 	
 	private ArrayListQueue<VisualElement> skins = new ArrayListQueue<>();
 	
+	private int[] allowedKeys = {UP_ARROW, DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, NO_DIRECTION};
 	
+	private int direction = NO_DIRECTION;
 	
 	public Player(){
 		
@@ -22,6 +26,8 @@ public class Player extends GameboardElement {
 	
 	@Override
 	public void initElement(){
+		this.skins.add(new PlayerSkin(0,0,this.tileSize));
+		this.skins.add(new PlayerSkin(0,0,this.tileSize));
 		this.skins.add(new PlayerSkin(0,0,this.tileSize));
 
 	}
@@ -67,8 +73,54 @@ public class Player extends GameboardElement {
 	}
 	
 	
+	public Point move(){
+		
+		if(this.skins.isEmpty()){
+			return null;
+		}
+		
+		if(this.direction == NO_DIRECTION){
+			return null;
+		}
+		VisualElement snakeTile = this.skins.poll();
+		Point firstPoint = this.skins.peekLast().getPoint();
+		
+		switch(this.direction){
+		case UP_ARROW:
+			firstPoint.setY(firstPoint.getY() + this.tileSize);
+			break;
+		case DOWN_ARROW:
+			firstPoint.setY(firstPoint.getY() - this.tileSize);
+			break;
+		case RIGHT_ARROW:
+			firstPoint.setX(firstPoint.getX() + this.tileSize);
+			break;
+		case LEFT_ARROW:
+			firstPoint.setX(firstPoint.getX() - this.tileSize);
+			break;
+			
+		}
+		
+		snakeTile.setPoint(firstPoint);
+		this.skins.add(snakeTile);
+		return firstPoint;
+		
+		
+		
+	}
+	
 	public int getPlayerSize(){
 		return this.skins.size();
+	}
+
+	@Override
+	public void receiverInput(int keyCode) {
+		for(int key: this.allowedKeys){
+			if(key == keyCode){
+				this.direction = keyCode;
+			}
+		}
+		
 	}
 	
 }

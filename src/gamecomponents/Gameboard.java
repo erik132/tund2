@@ -46,7 +46,7 @@ public class Gameboard {
 	
 	
 	public synchronized void tick(){
-		
+		this.player.move();
 	}
 	
 	
